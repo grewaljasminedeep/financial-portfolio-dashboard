@@ -28,3 +28,13 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
         } else if (type == "SELL") {
             net_qty[asset_id] -= qty;
             // For simplicity, reduce cost basis proportionally
+            double avg = (total_cost[asset_id] / (net_qty[asset_id] + qty));
+            total_cost[asset_id] -= qty * avg;
+        }
+    }
+
+    // Get latest prices
+    std::unordered_map<int, double> latest_price;
+    std::string priceSql = "SELECT p.asset_id, p.close_price"
+                           " FROM prices p"
+                           " JOIN (SELECT asset_id, MAX(price_date) AS max_date"
