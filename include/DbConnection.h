@@ -1,8 +1,8 @@
 #pragma once
 
-#include <pqxx/pqxx>
-#include <string>
 #include <memory>
+#include <string>
+#include <pqxx/pqxx>
 
 struct DbConfig {
     std::string host = "localhost";
@@ -13,8 +13,9 @@ struct DbConfig {
 };
 
 class DbConnection {
-    public:
+public:
     explicit DbConnection(const DbConfig& cfg);
-    pqxx::Connection& connection();
-    private:
-}
+    pqxx::connection& connection();
+private:
+    std::unique_ptr<pqxx::connection> conn_;
+};
