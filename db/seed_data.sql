@@ -18,3 +18,13 @@ FROM assets a WHERE a.ticker = 'MSFT';
 INSERT INTO transactions (asset_id, transaction_type, quantity, price_per_unit, executed_at)
 SELECT a.asset_id, 'BUY', 8, 140.00, '2025-03-05 09:45:00+00'
 FROM assets a WHERE a.ticker = 'GOOGL';
+
+INSERT INTO transactions (asset_id, transaction_type, quantity, price_per_unit, executed_at)
+SELECT a.asset_id, 'SELL', 3, 170.00, '2025-06-20 14:15:00+00'
+FROM assets a WHERE a.ticker = 'AAPL';
+
+-- Sample prices (just a few rows to test)
+INSERT INTO prices (asset_id, price_date, close_price)
+SELECT a.asset_id, '2025-06-01', 160.00
+FROM assets a WHERE a.ticker = 'AAPL'
+ON CONFLICT (asset_id, price_date) DO NOTHING;
