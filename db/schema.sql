@@ -27,4 +27,10 @@ CREATE TABLE IF NOT EXISTS transactions (
     transaction_type VARCHAR(4) NOT NULL CHECK (transaction_type IN ('BUY', 'SELL')),
     quantity NUMERIC(12, 4) NOT NULL,
     price_per_unit NUMERIC(12, 2) NOT NULL,
-)
+    executed_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+    notes TEXT
+);
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS idx_prices_asset_date ON prices(asset_id, price_date);
+CREATE INDEX IF NOT EXISTS idx_transactions_asset ON transactions(asset_id);
