@@ -28,3 +28,13 @@ INSERT INTO prices (asset_id, price_date, close_price)
 SELECT a.asset_id, '2025-06-01', 160.00
 FROM assets a WHERE a.ticker = 'AAPL'
 ON CONFLICT (asset_id, price_date) DO NOTHING;
+
+INSERT INTO prices (asset_id, price_date, close_price)
+SELECT a.asset_id, '2025-06-02', 162.50
+FROM assets a WHERE a.ticker = 'AAPL'
+ON CONFLICT (asset_id, price_date) DO NOTHING;
+
+INSERT INTO prices (asset_id, price_date, close_price)
+SELECT a.asset_id, '2025-06-03', 158.75
+FROM assets a WHERE a.ticker = 'AAPL'
+ON CONFLICT (asset_id, price_date) DO NOTHING;
