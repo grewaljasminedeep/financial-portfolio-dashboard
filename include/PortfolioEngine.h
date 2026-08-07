@@ -28,3 +28,5 @@ public:
     PortfolioSummary getSummary(const std::vector<AssetPosition>& positions);
 
 private:
+    DbConnection& db_;
+};
