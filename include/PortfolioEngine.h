@@ -20,3 +20,11 @@ struct PortfolioSummary {
     double total_cost_basis;
     double total_unrealized_pnl;
 };
+
+class PortfolioEngine {
+public:
+    explicit PortfolioEngine(DbConnection& db);
+    std::vector<AssetPosition> getPositions();
+    PortfolioSummary getSummary(const std::vector<AssetPosition>& positions);
+
+private:
