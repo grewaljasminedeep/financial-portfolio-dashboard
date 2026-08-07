@@ -8,3 +8,32 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBPQXX REQUIRED libpqxx)
+
+add_executable(FinancialPortfolioApp
+    src/main.cpp
+    src/DbConnection.cpp
+    src/MarketDataWorker.cpp
+    src/PortfolioEngine.cpp
+    src/PortfolioModel.cpp
+    src/ChartWidget.cpp
+    src/MainWindow.cpp
+)
+
+target_include_directories(FinancialPortfolioApp PRIVATE
+    ${CMAKE_SOURCE_DIR}/include
+    ${LIBPQXX_INCLUDE_DIRS}
+)
+
+target_link_libraries(FinancialPortfolioApp PRIVATE
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Sql
+    ${LIBPQXX_LIBRARIES}
+)
+
+target_compile_options(FinancialPortfolioApp PRIVATE
+    -Wall -Wextra -pedantic
+)

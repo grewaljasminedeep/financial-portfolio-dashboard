@@ -1,0 +1,17 @@
+database:
+  host: "localhost"
+  port: 5432
+  name: "portfolio_db"
+  user: "trader"
+  password: "secure_pass"
+
+market_data:
+  provider: "mock" # later: "alphavantage", "yahoo", etc.
+  api_key: ""
+  poll_interval_seconds: 10
+
+watchlist:
+  - "AAPL"
+  - "MSFT"
+  - "GOOGL"
+  - "TSLA"
