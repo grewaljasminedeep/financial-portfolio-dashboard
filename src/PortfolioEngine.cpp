@@ -18,3 +18,13 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
 
     for (auto const& row : txn.query(std::string(txSql))) {
         int asset_id = row["asset_id"].as<int>();
+        std::string type = row["transaction_type"].as<std::string>();
+        double qty = row["quantity"].as<double>();
+        double price = row["price_per_unit"].as<double>();
+
+        if (type == "BUY") {
+            net_qty[asset_id] += qty;
+            total_cost[asset_id] += qty * price;
+        } else if (type == "SELL") {
+            net_qty[asset_id] -= qty;
+            // For simplicity, reduce cost basis proportionally
