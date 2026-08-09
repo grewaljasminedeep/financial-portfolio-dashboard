@@ -7,4 +7,14 @@
 
 class MarketDataWorker : public QThread {
     Q_OBJECT
+public:
+    explicit MarketDataWorker(DbConnection& db,
+        const std::vector<std::string>& watchlist,
+        int pollIntervalSec,
+        QObject* parent = nullptr);
+
+    void stop();
+
+signals:
+    void newPricesAvailable();
 }
