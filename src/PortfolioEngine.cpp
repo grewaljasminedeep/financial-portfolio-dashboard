@@ -78,3 +78,13 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
     }
 
     return positions;
+}
+
+PortfolioSummary PortfolioEngine::getSummary(const std::vector<AssetPosition>& positions) {
+    PortfolioSummary s{};
+    for (auto const& p : positions) {
+        s.total_market_value += p.market_value;
+        s.total_cost_basis += p.cost_basis;
+        s.total_unrealized_pnl += p.unrealized_pnl;
+    }
+}
