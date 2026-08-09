@@ -26,5 +26,6 @@ private:
     std::vector<std::string> watchlist_;
     int pollIntervalSec_;
     bool running_;
-    
-}
+
+    void fetchAndStoreMockPrices();
+};
