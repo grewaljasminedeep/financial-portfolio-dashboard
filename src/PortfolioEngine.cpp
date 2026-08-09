@@ -87,4 +87,5 @@ PortfolioSummary PortfolioEngine::getSummary(const std::vector<AssetPosition>& p
         s.total_cost_basis += p.cost_basis;
         s.total_unrealized_pnl += p.unrealized_pnl;
     }
+    return s;
 }
