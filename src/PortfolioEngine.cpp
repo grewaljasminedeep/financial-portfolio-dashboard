@@ -48,3 +48,15 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
     }
 
     // Get tickers
+    std::unordered_map<int, std::string> ticker_map;
+    std::string assetSql = "SELECT asset_id, ticker FROM assets";
+    for (auto const& row : txn.query(std::string(assetSql))) {
+        ticker_map[row["asset_id"].as<int>()] = row["ticker"].as<std::string>();
+    }
+
+    txn.commit();
+
+    std::vector<AssetPosition> positions;
+    for (auto const& [asset_id, qty] : net_qty) {
+        
+    }
