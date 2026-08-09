@@ -66,6 +66,15 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
         double unrealized = mkt_val - cost_basis;
 
         positions.push_back({
-            
-        })
+            asset_id,
+            ticker_map[asset_id],
+            qty,
+            avg_cost,
+            cur_price,
+            mkt_val,
+            cost_basis,
+            unrealized
+        });
     }
+
+    return positions;
