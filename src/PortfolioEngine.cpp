@@ -58,5 +58,14 @@ std::vector<AssetPosition> PortfolioEngine::getPositions() {
 
     std::vector<AssetPosition> positions;
     for (auto const& [asset_id, qty] : net_qty) {
-        
+        if (qty <= 0) continue;
+        double avg_cost = (qty > 0) ? (total_cost[asset_id] / qty) : 0.0;
+        double cur_price = latest_price.count(asset_id) ? latest_price[asset_id] : 0.0;
+        double mkt_val = qty * cur_price;
+        double cost_basis = qty * avg_cost;
+        double unrealized = mkt_val - cost_basis;
+
+        positions.push_back({
+            
+        })
     }
