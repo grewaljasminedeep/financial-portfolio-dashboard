@@ -17,4 +17,14 @@ public:
 
 signals:
     void newPricesAvailable();
+
+protected:
+    void run() override;
+
+private:
+    DbConnection& db_;
+    std::vector<std::string> watchlist_;
+    int pollIntervalSec_;
+    bool running_;
+    
 }
