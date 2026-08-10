@@ -11,14 +11,20 @@ MarketDataWorker::MarketDataWorker(DbConnection& db,
                                     pollIntervalSec_(pollIntervalSec),
                                     running_(true) {}
 
-                                    void MarketDataWorker::stop() {
-                                        running_ = false;
-                                    }
+void MarketDataWorker::stop() {
+    running_ = false;
+    }
 
-                                    void MarketDataWorker::run() {
-                                        while (running_)
-                                        {
-                                            
-                                        }
-                                        
-                                    }
+void MarketDataWorker::run() {
+    while (running_) {
+        fetchAndStoreMockPrices();
+        emit newPricesAvailable();
+        for (int i = 0; i < pollIntervalSec_ * 10 && running_; ++i){
+             msleep(100);
+             }
+        }
+    }
+
+void MarketDataWorker::fetchAndStoreMockPrices() {
+    pqxx::Connection& conn = db_.connection();
+}
