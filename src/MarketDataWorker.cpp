@@ -27,4 +27,14 @@ void MarketDataWorker::run() {
 
 void MarketDataWorker::fetchAndStoreMockPrices() {
     pqxx::Connection& conn = db_.connection();
+    pqxx::Work txn(conn);
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> d(-0.02, 0.02);
+    for (auto const& ticker : watchlist_){
+        // Get last price for this ticker
+        std::string sql = "SELECT p.close_price, a.asset_id"
+                            "FROM prices p"
+                            "JOIN assets a ON a.asset_id = p.asset_id"
+    }
 }
