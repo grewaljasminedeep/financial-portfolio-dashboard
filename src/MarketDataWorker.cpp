@@ -56,5 +56,9 @@ void MarketDataWorker::fetchAndStoreMockPrices() {
         std::string upsert = "INSERT INTO prices (asset_id, price_date, close_price)"
                             "VALUES ($1, $2, $3)"
                             "ON CONFLICT (asset_id, price_date) DO UPDATE"
+                            "SET close_price = EXCLUDED.close_price";
+        txn.exec_params(upsert, asset_id, dateBuf, new_price);
     }
+
+    txn.commit();
 }
