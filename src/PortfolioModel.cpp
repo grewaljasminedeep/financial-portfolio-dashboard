@@ -16,5 +16,15 @@ int PortfolioModel::columnCount(const QModelIndex&) const {
 }
 
 QVariant PortfolioModel::data(const QModelIndex& index, int role) const {
-    if (!index.isValid() || role != Qt::DisplayRole) return {};   
+    if (!index.isValid() || role != Qt::DisplayRole) return {};
+    auto const& p = positions_[static_cast<size_t>(index.row())];
+    switch (index.column()) {
+        case 0: return QString::fromStdString(p.ticker);
+        case 1: return p.quantity;
+        case 2: return p.avg_cost;
+        case 3: return p.current_prices;
+        case 4: return p.market_value;
+        case 5: return p.unrealized_pnl;
+        default: return {};
+    }
 }
