@@ -36,5 +36,15 @@ void MarketDataWorker::fetchAndStoreMockPrices() {
         std::string sql = "SELECT p.close_price, a.asset_id"
                             "FROM prices p"
                             "JOIN assets a ON a.asset_id = p.asset_id"
+                            "WHERE a.ticker = $1"
+                            "ORDER BY p.price_date DESC"
+                            "LIMIT 1";
+        pqxx::Result res = txn.exec_params(sql, ticker);
+        if (res.empty()) continue;
+        double last_price = res[0] ["close_price"].as<double>();
+        int asset_id = res[0] ["asset_id"].as<int>();
+        double change = d(gen);
+        double new_price = last_price * (1.0 + change);
+        if (new_price < 0.01) new_price = 0.01;
     }
 }
