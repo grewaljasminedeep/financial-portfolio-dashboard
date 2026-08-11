@@ -28,3 +28,13 @@ QVariant PortfolioModel::data(const QModelIndex& index, int role) const {
         default: return {};
     }
 }
+
+QVariant PortfolioModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    if (role != Qt::DisplayRole || orientation != Qt::Horizontal) return {};
+    switch (section) {
+        case 0: return "Ticker";
+        case 1: return "Qty";
+        case 2: return "Avg Cost";
+        case 3: return "Price";
+    }
+}
