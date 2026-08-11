@@ -16,6 +16,8 @@ private:
     QString ticker_;
 
     struct PricePoint {
-        
-    }
-}
+        int dayIndex; // O..N
+        double price;
+    };
+    std::vector<PricePoint> loadPrices(const QString& ticker);
+};
