@@ -46,5 +46,15 @@ void MarketDataWorker::fetchAndStoreMockPrices() {
         double change = d(gen);
         double new_price = last_price * (1.0 + change);
         if (new_price < 0.01) new_price = 0.01;
+
+        // Use current date as "today"
+        auto now = std::chrono::system_clock::now();
+        auto t = std::chrono::system_clock::to_time_t(now);
+        std::tm* tm = std::gmtime(&t);
+        char dateBuf[11];
+        std::strftime(dateBuf, sizeof(dateBuf), "%Y-%m-%d", tm);
+        std::string upsert = "INSERT INTO prices (asset_id, price_date, close_price)"
+                            "VALUES ($1, $2, $3)"
+                            "ON CONFLICT (asset_id, price_date) DO UPDATE"
     }
 }
