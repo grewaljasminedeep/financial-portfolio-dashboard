@@ -8,5 +8,13 @@ void PortfolioModel::setPositions(const std::vector<AssetPosition>& positions) {
 }
 
 int PortfolioModel::rowCount(const QModelIndex&) const {
-    
+    return static_cast<int>(positions_.size());
+}
+
+int PortfolioModel::columnCount(const QModelIndex&) const {
+    return 6; // Ticker, Qty, AvgCost, Price, MarketValue, PnL
+}
+
+QVariant PortfolioModel::data(const QModelIndex& index, int role) const {
+    if (!index.isValid() || role != Qt::DisplayRole) return {};   
 }
