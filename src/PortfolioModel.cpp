@@ -36,5 +36,8 @@ QVariant PortfolioModel::headerData(int section, Qt::Orientation orientation, in
         case 1: return "Qty";
         case 2: return "Avg Cost";
         case 3: return "Price";
+        case 4: return "Market Value";
+        case 5: return "Unrealized P&L";
+        default: return {};
     }
 }
