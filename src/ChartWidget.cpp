@@ -47,4 +47,14 @@ p.setRenderHint(QPainter::Antialiasing, true);
     }
 
     int w = width() - 40;
+    int h = height() - 40;
+    int offsetX = 30;
+    int offsetY = 20;
+
+    double minPrice = pts[0].price;
+    double maxPrice = pts[0].price;
+    for (auto const& pt : pts) {
+        if (pt.price < minPrice) minPrice = pt.price;
+        if (pt.price > maxPrice) maxPrice = pt.price;
+    }
 }
