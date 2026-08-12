@@ -66,5 +66,15 @@ p.setRenderHint(QPainter::Antialiasing, true);
     QPainterPath path;
     for (size_t i = 0; i < pts.size(); ++i) {
         double x = offsetX + (w * static_cast<double>(pts[i].dayIndex) / (pts.size() - 1));
+        double y = offsetY + h * (1.0 - (pts[i].price - minPrice) / range);
+        if (i == 0)
+            path.moveTo(x, y);
+        else
+            path.lineTo(x, y);
     }
+    p.drawPath(path);
+
+    //Axes
+    p.setPen(QPen(QColor(100, 100, 100), 1));
+    p.drawLine(offsetX, offsetY, offsetX, offsetY + h);
 }
