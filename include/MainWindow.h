@@ -17,4 +17,12 @@ public:
 private slots:
     void refreshPortfolio();
     void onTickerChanged(const QString& ticker);
-}
+
+private:
+    DbConnection db_;
+    MarketDataWorker* worker_;
+    PortfolioModel* model_;
+    QTableView* table_;
+    ChartWidget* chart_;
+    QLineEdit* tickerInput_;
+};
