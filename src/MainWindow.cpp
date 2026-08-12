@@ -48,3 +48,13 @@ MainWindow::~MainWindow() {
 void MainWindow::refreshPortfolio() {
     PortfolioEngine engine(db_);
     auto positions = engine.getPositions();
+    auto summary = engine.getSummary(positions);
+    model_->setPositions(positions);
+
+    // You could update a summary label here if you add one.
+    (void)summary; // reserved for future UI
+}
+
+void MainWindow::onTickerChanged(const QString& ticker) {
+    if (ticker.trimmed().isEmpty()) return;
+    chart_->setTicker(ticker.toUpper());
