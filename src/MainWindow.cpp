@@ -18,4 +18,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), db_({ "localhost"
     connect(tickerInput_, &QLineEdit::returnPressed, this, [this]() {
         onTickerChanged(tickerInput_->text());
     });
+
+    auto* rightLayout = new QVBoxLayout();
+    rightLayout->addWidget(new QLabel("Price Chart"));
+    rightLayout->addWidget(tickerInput_);
+    rightLayout->addWidget(chart_);
+    auto* splitter = new QSplitter(Qt::Horizontal);
+    splitter->addWidget(table_);
+    auto* rightWidget = new QWidget();
+    rightWidget->setLayout(rightLayout);
 }
