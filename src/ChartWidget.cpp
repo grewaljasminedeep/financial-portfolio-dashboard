@@ -36,6 +36,15 @@ void ChartWidget::paintEvent(QPaintEvent*) {
 p.setRenderHint(QPainter::Antialiasing, true);
     
     if (ticker_.isEmpty()) {
-        
+        p.drawText(rect(), Qt::AlignCenter, "Select an asset");
+        return;
     }
+
+    auto pts = loadPrices(ticker_);
+    if (pts.empty()) {
+        p.drawText(rect(), Qt::AlignCenter, "No price data");
+        return;
+    }
+
+    int w = width() - 40;
 }
