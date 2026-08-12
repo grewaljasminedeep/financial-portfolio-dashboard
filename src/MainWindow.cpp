@@ -7,4 +7,15 @@
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), db_({ "localhost", 5432, "portfolio_db", "trader", "secure_pass" }) {
     setWindowTitle("Financial Portfolio Dashboard");
+    model_ = new PortfolioModel(this);
+    table_ = new QTableView();
+    table_->setModel(model_);
+    table_->setAlternatingRowColors(true);
+    chart_ = new ChartWidget(db_, this);
+    chart_->setMinimumHeight(200);
+    tickerInput_ = new QLineEdit();
+    tickerInput_->setPlaceholderText("Enter ticker (e.g., AAPL)");
+    connect(tickerInput_, &QLineEdit::returnPressed, this, [this]() {
+        onTickerChanged(tickerInput_->text());
+    });
 }
