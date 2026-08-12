@@ -77,4 +77,9 @@ p.setRenderHint(QPainter::Antialiasing, true);
     //Axes
     p.setPen(QPen(QColor(100, 100, 100), 1));
     p.drawLine(offsetX, offsetY, offsetX, offsetY + h);
+    p.drawLine(offsetX, offsetY + h, offsetX + w, offsetY + h);
+
+    p.setFont(QFont("Arial", 9));
+    p.setPen(QColor(50, 50, 50));
+    p.drawText(5, 15, ticker_);
 }
