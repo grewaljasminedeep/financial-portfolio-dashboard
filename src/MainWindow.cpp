@@ -37,3 +37,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), db_({ "localhost"
     worker_->start();
     refreshPortfolio();
 }
+
+MainWindow::~MainWindow() {
+    if (worker_) {
+        worker_->stop();
+        worker_->wait();
+    }
+}
+
+void MainWindow::refreshPortfolio() {
+    PortfolioEngine engine(db_);
+    auto positions = engine.getPositions();
