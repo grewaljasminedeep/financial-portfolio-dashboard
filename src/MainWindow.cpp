@@ -58,3 +58,4 @@ void MainWindow::refreshPortfolio() {
 void MainWindow::onTickerChanged(const QString& ticker) {
     if (ticker.trimmed().isEmpty()) return;
     chart_->setTicker(ticker.toUpper());
+}
