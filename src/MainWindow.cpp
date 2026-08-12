@@ -27,4 +27,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent), db_({ "localhost"
     splitter->addWidget(table_);
     auto* rightWidget = new QWidget();
     rightWidget->setLayout(rightLayout);
+    splitter->addWidget(rightWidget);
+    setCentralWidget(splitter);
+
+    //Market data worker
+    std::vector<std::string> watchlist = { "AAPL", "MSFT", "GOOGL", "TSLA"};
+    worker_ = new MarketDataWorker(db_, watchlist, 10, this);
+    connect(worker_, &MarketDataWorker::newPricesAvailable, this, &MainWindow::refreshPortfolio);
+    worker_->start();
+    refreshPortfolio();
 }
