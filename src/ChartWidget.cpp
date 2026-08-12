@@ -57,4 +57,14 @@ p.setRenderHint(QPainter::Antialiasing, true);
         if (pt.price < minPrice) minPrice = pt.price;
         if (pt.price > maxPrice) maxPrice = pt.price;
     }
+    double range = maxPrice - minPrice;
+    if (range == 0) range = 1.0;
+
+    QPen pen(QColor(0, 100, 200), 2);
+    p.setPen(pen);
+
+    QPainterPath path;
+    for (size_t i = 0; i < pts.size(); ++i) {
+        double x = offsetX + (w * static_cast<double>(pts[i].dayIndex) / (pts.size() - 1));
+    }
 }
