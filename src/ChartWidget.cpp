@@ -27,4 +27,15 @@ std::vector<ChartWidget::PricePoint> ChartWidget::loadPrices(const QString& tick
         pts.push_back({i++, row["close_price"].as<double>()});
     }
     txn.commit();
+    return pts;
+}
+
+void ChartWidget::paintEvent(QPaintEvent*) {
+    QPainter p(this);
+
+p.setRenderHint(QPainter::Antialiasing, true);
+    
+    if (ticker_.isEmpty()) {
+        
+    }
 }
