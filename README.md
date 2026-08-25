@@ -1,6 +1,8 @@
 # Financial Portfolio Dashboard
 
-A modern C++ desktop application for tracking and analyzing financial portfolios. Built with Qt6 and PostgreSQL, this dashboard provides real-time portfolio monitoring, transaction management, and interactive price charts.
+A C++17 desktop application for tracking and analyzing financial portfolios. Built with Qt6, PostgreSQL, libpqxx, and yaml-cpp, the dashboard provides portfolio monitoring, transaction management, and interactive price charts.
+
+> The current market-data implementation uses the `mock` provider. External providers are planned but are not enabled yet.
 
 ## Features
 
@@ -20,23 +22,26 @@ Before building this project, ensure you have the following installed:
 - **CMake** ≥ 3.16
 - **C++ Compiler** with C++17 support (GCC, Clang, or MSVC)
 - **Qt6** (Core, Gui, Widgets, Sql modules)
-- **PostgreSQL** client libraries (libpqxx)
+- **libpqxx** and its PostgreSQL client dependencies
+- **yaml-cpp**
+- **pkg-config** (used by CMake to locate libpqxx)
 - **PostgreSQL** server (for database backend)
 
 #### Ubuntu/Debian
 ```bash
-sudo apt-get install cmake build-essential qt6-base-dev libqt6sql6 libpqxx-dev postgresql postgresql-contrib
+sudo apt-get install cmake build-essential pkg-config qt6-base-dev libqt6sql6 libpqxx-dev libyaml-cpp-dev postgresql postgresql-contrib
 ```
 
 #### macOS (using Homebrew)
 ```bash
-brew install cmake qt libpqxx postgresql@15
+brew install cmake pkg-config qt libpqxx yaml-cpp postgresql@15
 ```
 
 #### Windows
-- Download and install CMake from https://cmake.org/
-- Download Qt6 from https://www.qt.io/download
-- Install PostgreSQL from https://www.postgresql.org/download/windows/
+- Download and install CMake from https://cmake.org/.
+- Download Qt6 from https://www.qt.io/download.
+- Install PostgreSQL from https://www.postgresql.org/download/windows/.
+- Install `libpqxx`, `yaml-cpp`, and `pkg-config` using a package manager such as vcpkg or MSYS2.
 - Install Visual Studio Build Tools or MinGW with C++17 support
 
 ## Building
@@ -58,12 +63,18 @@ cd build
 cmake ..
 ```
 
+If CMake cannot locate Qt6 or another dependency, provide the installation prefix explicitly:
+
+```bash
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/Qt6
+```
+
 4. **Build the application**
 ```bash
 cmake --build . --config Release
 ```
 
-The compiled executable `FinancialPortfolioApp` will be in the `build/` directory.
+The compiled executable will be in the `build/` directory. On multi-configuration generators such as Visual Studio, it will typically be in `build/Release/`.
 
 ## Database Setup
 
@@ -112,15 +123,21 @@ watchlist:                     # Asset tickers to monitor
   - "TSLA"
 ```
 
+The application looks for `config.yaml` in its current working directory. Run it from the repository root, or place a copy of the configuration file beside the executable.
+
 ## Running the Application
 
 After successful build and database setup:
 
 ```bash
-./FinancialPortfolioApp
+# Linux/macOS
+./build/FinancialPortfolioApp
+
+# Windows with a Visual Studio build
+build\\Release\\FinancialPortfolioApp.exe
 ```
 
-The application will launch with a 1000x600 window displaying your portfolio dashboard.
+The application opens a `1100x650` window displaying the portfolio dashboard. If `config.yaml` is missing or invalid, the application logs a warning and uses default configuration values.
 
 ## Project Structure
 
@@ -156,7 +173,7 @@ financial-portfolio-dashboard/
 Manages PostgreSQL database connections and queries using libpqxx. Handles asset, price, and transaction data.
 
 ### MarketDataWorker
-Background worker thread that fetches real-time market data at configurable intervals. Currently supports mock data; extensible for multiple data providers.
+Background worker thread that refreshes market data at configurable intervals. The current implementation supports mock data and is structured for future provider integrations.
 
 ### PortfolioEngine
 Core portfolio calculation engine. Computes metrics like total value, gains/losses, asset allocation, and performance analytics.
@@ -204,7 +221,7 @@ Extend `MarketDataWorker` with additional provider implementations:
 - On Windows: Add Qt6 bin directory to system PATH
 
 ### CMake Configuration Issues
-- Clear build directory: `rm -rf build`
+- Delete and recreate the `build` directory
 - Regenerate: `cmake -DCMAKE_PREFIX_PATH=/path/to/Qt6 ..`
 
 ## Future Enhancements
@@ -223,4 +240,4 @@ For issues, questions, or contributions, please open an issue or pull request on
 ---
 
 **Version**: 0.1.0  
-**Last Updated**: 2026-08-12
+**Last Updated**: 2026-08-25
