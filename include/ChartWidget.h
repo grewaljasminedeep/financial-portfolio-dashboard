@@ -3,6 +3,7 @@
 #include "DbConnection.h"
 #include <QWidget>
 #include <QString>
+#include <vector>
 
 class ChartWidget : public QWidget {
     Q_OBJECT
@@ -16,8 +17,11 @@ private:
     QString ticker_;
 
     struct PricePoint {
-        int dayIndex; // O..N
+        QDate date;
         double price;
     };
     std::vector<PricePoint> loadPrices(const QString& ticker);
+    void drawGrid(QPainter& p, const QRect& rect);
+    void drawAxes(QPainter& p, const QRect& rect, double minPrice, double maxPrice);
+    void drawLabels(QPainter& p, const QRect& rect, double minPrice, double maxPrice, int pointsCount);
 };
