@@ -6,7 +6,7 @@ database:
   password: "secure_pass"
 
 market_data:
-  provider: "mock" # later: "alphavantage", "yahoo", etc.
+  provider: "mock" # later: "alphavantage"
   api_key: ""
   poll_interval_seconds: 10
 

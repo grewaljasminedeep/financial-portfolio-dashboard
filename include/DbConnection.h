@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include <pqxx/pqxx>
+#include <pqxx/pqxx.hxx>
 
 struct DbConfig {
     std::string host = "localhost";
