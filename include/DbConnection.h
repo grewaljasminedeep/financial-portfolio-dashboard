@@ -2,7 +2,8 @@
 
 #include <memory>
 #include <string>
-#include <pqxx/pqxx.hxx>
+#include <pqxx/pqxx>
+#include "Config.h"
 
 struct DbConfig {
     std::string host = "localhost";
@@ -17,5 +18,5 @@ public:
     explicit DbConnection(const DbConfig& cfg);
     pqxx::connection& connection();
 private:
-    std::unique_ptr<pqxx::connection> conn_;
+    std::unique_ptr<pqxx::Connection> conn_;
 };
