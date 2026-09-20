@@ -6,9 +6,13 @@ database:
   password: "secure_pass"
 
 market_data:
-  provider: "mock" # later: "alphavantage"
-  api_key: ""
-  poll_interval_seconds: 10
+  provider: "alphavantage" # or: "mock"
+  api_key: "" # optional generic
+  poll_interval_seconds: 60
+
+alphavantage:
+  api_key: "ST5EDPHPC2DU0917"
+  output_size: "compact" 
 
 watchlist:
   - "AAPL"
