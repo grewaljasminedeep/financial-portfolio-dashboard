@@ -25,6 +25,11 @@ AppConfig loadConfig(const std::string& path) {
         if (md["poll_interval_seconds"]) cfg.market_data.poll_interval_seconds = md["poll_interval_seconds"].as<int>();
     }
 
+    if (auto av = md["alphavantage"]) {
+        if (av["api_key"]) cfg.market_data.alphavantage.api_key = av["api_key"].as<std::string>();
+        if (av["output_size"]) cfg.market_data.alphavantage.output_size = av["output_size"].as<std::string>();
+    }
+
     if (auto wl = root["watchlist"]) {
         cfg.watchlist = wl.as<std::vector<std::string>>();
     }
