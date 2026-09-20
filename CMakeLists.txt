@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Sql Network)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBPQXX REQUIRED libpqxx)
 find_package(yaml-cpp REQUIRED)
@@ -16,6 +16,8 @@ add_executable(FinancialPortfolioApp
     src/main.cpp
     src/DbConnection.cpp
     src/MarketDataWorker.cpp
+    src/RealMarketDataWorker.cpp
+    src/AlphaVantageClient.cpp
     src/PortfolioEngine.cpp
     src/PortfolioModel.cpp
     src/ChartWidget.cpp
@@ -33,6 +35,7 @@ target_link_libraries(FinancialPortfolioApp PRIVATE
     Qt6::Gui
     Qt6::Widgets
     Qt6::Sql
+    Qt6::Network
     ${LIBPQXX_LIBRARIES}
     yaml-cpp
 )
