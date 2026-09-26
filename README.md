@@ -1,87 +1,152 @@
 # Financial Portfolio Dashboard
 
-A C++17 desktop application for tracking and analyzing financial portfolios. Built with Qt6, PostgreSQL, libpqxx, and yaml-cpp, the dashboard provides portfolio monitoring, transaction management, and interactive price charts.
+A Qt-based C++ desktop application for tracking portfolio performance, monitoring watchlists, and visualizing asset price history from PostgreSQL-backed data.
 
-> The current market-data implementation uses the `mock` provider. External providers are planned but are not enabled yet.
+This project combines:
+- Qt6 widgets for the interactive dashboard
+- PostgreSQL + libpqxx for persistent portfolio and market data storage
+- YAML config files for app and database settings
+- Mock and Alpha Vantage market-data providers
+- Custom portfolio analytics and chart rendering
+
+## Overview
+
+The dashboard shows a summary of total portfolio value, cost basis, and unrealized P&L, along with a table of positions and a chart for the selected ticker. The application loads configuration from `config.yaml`, connects to PostgreSQL, and periodically refreshes market data for each symbol in the configured watchlist.
 
 ## Features
 
-- **Portfolio Management**: Track your investments across multiple assets
-- **Transaction History**: Record and manage buy/sell transactions
-- **Real-time Price Data**: Fetch market data from configurable providers
-- **Interactive Charts**: Visualize price trends and portfolio performance
-- **Database Persistence**: PostgreSQL backend for reliable data storage
-- **Intuitive UI**: Qt6-based GUI for seamless user experience
-- **Asset Tracking**: Monitor multiple stocks with configurable watchlists
+- Portfolio summary panel with market value and P&L
+- Asset position table for holdings and transactions
+- Ticker-based chart view in the UI
+- Configurable watchlists
+- PostgreSQL schema for assets, prices, and transactions
+- Mock data provider for local/offline development
+- Alpha Vantage-backed real market-data polling
+- CMake-based cross-platform build setup
+
+## Tech Stack
+
+- C++17
+- Qt6 Core / Gui / Widgets / Sql / Network
+- PostgreSQL
+- libpqxx
+- yaml-cpp
+- CMake 3.16+
 
 ## Prerequisites
 
-Before building this project, ensure you have the following installed:
+Install the following before building:
 
-### Required
-- **CMake** ≥ 3.16
-- **C++ Compiler** with C++17 support (GCC, Clang, or MSVC)
-- **Qt6** (Core, Gui, Widgets, Sql modules)
-- **libpqxx** and its PostgreSQL client dependencies
-- **yaml-cpp**
-- **pkg-config** (used by CMake to locate libpqxx)
-- **PostgreSQL** server (for database backend)
+- CMake 3.16 or newer
+- A C++17 compiler (GCC, Clang, or MSVC)
+- Qt6 development libraries
+- PostgreSQL server and client libraries
+- libpqxx with PostgreSQL client headers
+- yaml-cpp
+- pkg-config
 
-#### Ubuntu/Debian
+### Ubuntu / Debian
+
 ```bash
-sudo apt-get install cmake build-essential pkg-config qt6-base-dev libqt6sql6 libpqxx-dev libyaml-cpp-dev postgresql postgresql-contrib
+sudo apt-get update
+sudo apt-get install -y \
+  build-essential \
+  cmake \
+  pkg-config \
+  qt6-base-dev \
+  libqt6sql6 \
+  libpqxx-dev \
+  libyaml-cpp-dev \
+  postgresql postgresql-contrib
 ```
 
-#### macOS (using Homebrew)
+### macOS (Homebrew)
+
 ```bash
 brew install cmake pkg-config qt libpqxx yaml-cpp postgresql@15
 ```
 
-#### Windows
-- Download and install CMake from https://cmake.org/.
-- Download Qt6 from https://www.qt.io/download.
-- Install PostgreSQL from https://www.postgresql.org/download/windows/.
-- Install `libpqxx`, `yaml-cpp`, and `pkg-config` using a package manager such as vcpkg or MSYS2.
-- Install Visual Studio Build Tools or MinGW with C++17 support
+### Windows
 
-## Building
+On Windows, install:
+- CMake from https://cmake.org/
+- Qt6 from https://www.qt.io/download
+- PostgreSQL from https://www.postgresql.org/download/windows/
+- libpqxx and yaml-cpp via vcpkg, MSYS2, or another package manager
+- Visual Studio Build Tools or MinGW with C++17 support
 
-1. **Clone the repository**
-```bash
-git clone <repository-url>
-cd financial-portfolio-dashboard
+## Project Structure
+
+```text
+financial-portfolio-dashboard/
+├── CMakeLists.txt
+├── README.md
+├── config.yaml
+├── db/
+│   ├── schema.sql
+│   └── seed_data.sql
+├── include/
+│   ├── AlphaVantageClient.h
+│   ├── ChartWidget.h
+│   ├── Config.h
+│   ├── DbConnection.h
+│   ├── MainWindow.h
+│   ├── MarketDataWorker.h
+│   ├── PortfolioEngine.h
+│   ├── PortfolioModel.h
+│   └── RealMarketDataWorker.h
+├── resources/
+├── src/
+│   ├── AlphaVantageClient.cpp
+│   ├── ChartWidget.cpp
+│   ├── Config.cpp
+│   ├── DbConnection.cpp
+│   ├── MainWindow.cpp
+│   ├── MarketDataWorker.cpp
+│   ├── PortfolioEngine.cpp
+│   ├── PortfolioModel.cpp
+│   ├── RealMarketDataWorker.cpp
+│   ├── main.cpp
+│   └── ...
+└── build/
 ```
 
-2. **Create a build directory**
-```bash
-mkdir build
-cd build
+## Configuration
+
+The application reads settings from `config.yaml` in the working directory. A sample configuration looks like this:
+
+```yaml
+database:
+  host: "localhost"
+  port: 5432
+  name: "portfolio_db"
+  user: "trader"
+  password: "secure_pass"
+
+market_data:
+  provider: "mock"
+  poll_interval_seconds: 10
+  alphavantage:
+    api_key: "YOUR_ALPHA_VANTAGE_KEY"
+    output_size: "compact"
+
+watchlist:
+  - "AAPL"
+  - "MSFT"
+  - "GOOGL"
+  - "TSLA"
 ```
 
-3. **Configure with CMake**
-```bash
-cmake ..
-```
-
-If CMake cannot locate Qt6 or another dependency, provide the installation prefix explicitly:
-
-```bash
-cmake .. -DCMAKE_PREFIX_PATH=/path/to/Qt6
-```
-
-4. **Build the application**
-```bash
-cmake --build . --config Release
-```
-
-The compiled executable will be in the `build/` directory. On multi-configuration generators such as Visual Studio, it will typically be in `build/Release/`.
+Notes:
+- `provider` supports `mock` and `alphavantage`.
+- If `provider` is set to `alphavantage`, the app uses the nested `market_data.alphavantage.api_key` value.
+- The app defaults to the mock provider when the configured provider is not active or no real-data source is available.
 
 ## Database Setup
 
-1. **Create the database and user**
-```bash
-sudo -u postgres psql
-```
+The app expects a PostgreSQL database with the schema defined in `db/schema.sql`.
+
+1. Create a database and user:
 
 ```sql
 CREATE DATABASE portfolio_db;
@@ -89,155 +154,125 @@ CREATE USER trader WITH PASSWORD 'secure_pass';
 GRANT ALL PRIVILEGES ON DATABASE portfolio_db TO trader;
 ```
 
-2. **Initialize the schema**
-```bash
-sudo -u postgres psql -d portfolio_db -f db/schema.sql
-```
-
-3. **Seed initial data (optional)**
-```bash
-sudo -u postgres psql -d portfolio_db -f db/seed_data.sql
-```
-
-## Configuration
-
-Edit `config.yaml` to customize application settings:
-
-```yaml
-database:
-  host: "localhost"           # PostgreSQL host
-  port: 5432                  # PostgreSQL port
-  name: "portfolio_db"        # Database name
-  user: "trader"              # Database user
-  password: "secure_pass"     # Database password
-
-market_data:
-  provider: "mock"            # Data provider: "mock", "alphavantage", "yahoo"
-  api_key: ""                 # API key for market data provider
-  poll_interval_seconds: 10   # Refresh interval for market data
-
-watchlist:                     # Asset tickers to monitor
-  - "AAPL"
-  - "MSFT"
-  - "GOOGL"
-  - "TSLA"
-```
-
-The application looks for `config.yaml` in its current working directory. Run it from the repository root, or place a copy of the configuration file beside the executable.
-
-## Running the Application
-
-After successful build and database setup:
+2. Initialize the schema:
 
 ```bash
-# Linux/macOS
+psql -h localhost -U trader -d portfolio_db -f db/schema.sql
+```
+
+3. Optional: load sample data:
+
+```bash
+psql -h localhost -U trader -d portfolio_db -f db/seed_data.sql
+```
+
+## Building
+
+From the repository root:
+
+```bash
+cmake -S . -B build
+cmake --build build --config Release
+```
+
+If Qt is not automatically detected, point CMake at the Qt install location:
+
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/Qt6
+cmake --build build --config Release
+```
+
+The executable produced by this project is:
+
+```text
+build/FinancialPortfolioApp
+```
+
+On Windows, the output may appear under a build configuration directory such as `build/Release/FinancialPortfolioApp.exe`.
+
+## Running the App
+
+After building and setting up PostgreSQL:
+
+```bash
 ./build/FinancialPortfolioApp
-
-# Windows with a Visual Studio build
-build\\Release\\FinancialPortfolioApp.exe
 ```
 
-The application opens a `1100x650` window displaying the portfolio dashboard. If `config.yaml` is missing or invalid, the application logs a warning and uses default configuration values.
+On Windows:
 
-## Project Structure
-
-```
-financial-portfolio-dashboard/
-├── CMakeLists.txt              # CMake build configuration
-├── config.yaml                 # Application configuration
-├── README.md                   # This file
-├── include/                    # Header files
-│   ├── ChartWidget.h           # Chart visualization component
-│   ├── DbConnection.h          # Database connection manager
-│   ├── MainWindow.h            # Main application window
-│   ├── MarketDataWorker.h      # Market data fetching thread
-│   ├── PortfolioEngine.h       # Portfolio calculation logic
-│   └── PortfolioModel.h        # Portfolio data model
-├── src/                        # Implementation files
-│   ├── main.cpp                # Application entry point
-│   ├── ChartWidget.cpp
-│   ├── DbConnection.cpp
-│   ├── MainWindow.cpp
-│   ├── MarketDataWorker.cpp
-│   ├── PortfolioEngine.cpp
-│   └── PortfolioModel.cpp
-├── db/                         # Database files
-│   ├── schema.sql              # Database schema definition
-│   └── seed_data.sql           # Sample data for testing
-└── resources/                  # Application resources (icons, etc.)
+```powershell
+build\Release\FinancialPortfolioApp.exe
 ```
 
-## Key Components
+When launched, the app opens a dashboard window with:
+- total portfolio value
+- cost basis
+- unrealized P&L
+- positions table
+- ticker chart panel
 
-### DbConnection
-Manages PostgreSQL database connections and queries using libpqxx. Handles asset, price, and transaction data.
+## Market Data Behavior
 
-### MarketDataWorker
-Background worker thread that refreshes market data at configurable intervals. The current implementation supports mock data and is structured for future provider integrations.
+The application has two main runtime data modes:
 
-### PortfolioEngine
-Core portfolio calculation engine. Computes metrics like total value, gains/losses, asset allocation, and performance analytics.
+1. `mock`
+   - Uses the mock worker to generate or simulate market data.
+   - Useful for local development and testing without live API access.
 
-### PortfolioModel
-Qt data model adapting portfolio data for UI display. Integrates with QTableView for transaction history and statistics.
+2. `alphavantage`
+   - Uses the real market-data worker and the Alpha Vantage client.
+   - Pulls daily time series data for all symbols in the watchlist.
+   - Stores price bars in the `prices` table keyed by asset and date.
 
-### ChartWidget
-Custom Qt widget for rendering price charts and portfolio visualizations using Qt's graphics framework.
+## Database Schema
 
-### MainWindow
-Main application window orchestrating all components and handling user interactions.
+The application stores data in PostgreSQL tables including:
 
-## Development
+- `assets`
+- `prices`
+- `transactions`
 
-### Coding Standards
-- C++17 standard
-- Qt signals/slots for async operations
-- Thread-safe database operations
-- Compiler warnings enabled (-Wall -Wextra -pedantic)
+The schema includes unique constraints and indexes for efficient lookups by ticker and date.
 
-### Building in Debug Mode
-```bash
-cmake -DCMAKE_BUILD_TYPE=Debug ..
-cmake --build .
-```
+## Development Notes
 
-### Adding Market Data Providers
-Extend `MarketDataWorker` with additional provider implementations:
-1. Create provider-specific data fetching logic
-2. Update `config.yaml` provider options
-3. Implement provider selection in worker initialization
+- The app is designed around Qt signals and slots.
+- Market refreshes are handled by worker objects and timers.
+- The portfolio calculation logic lives in the portfolio engine and is reused by the UI.
+- The UI uses a `QTableView` and a custom chart widget for position and price visualization.
 
 ## Troubleshooting
 
-### Database Connection Failed
-- Verify PostgreSQL is running
-- Check credentials in `config.yaml`
-- Ensure database and schema are initialized
-- Test connection: `psql -h localhost -U trader -d portfolio_db`
+### Qt not found during CMake configure
 
-### Qt Libraries Not Found
-- On Linux: `export LD_LIBRARY_PATH=/path/to/qt6/lib:$LD_LIBRARY_PATH`
-- On macOS: Ensure Qt6 installation directory is in CMake's module path
-- On Windows: Add Qt6 bin directory to system PATH
+Set the Qt prefix explicitly:
 
-### CMake Configuration Issues
-- Delete and recreate the `build` directory
-- Regenerate: `cmake -DCMAKE_PREFIX_PATH=/path/to/Qt6 ..`
+```bash
+cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/Qt6
+```
 
-## Future Enhancements
+### PostgreSQL connection fails
 
-- [ ] Multiple market data providers (Alpha Vantage, Yahoo Finance, etc.)
-- [ ] Portfolio comparison and benchmarking
-- [ ] Advanced analytics and reporting
-- [ ] Mobile companion app
-- [ ] Export functionality (PDF, CSV)
-- [ ] Custom alerts and notifications
+Verify:
+- PostgreSQL is running
+- `config.yaml` credentials match the database
+- the schema has been applied with `db/schema.sql`
 
-## Support
+### Missing config file
 
-For issues, questions, or contributions, please open an issue or pull request on the project repository.
+Run the app from the project root, or place a valid `config.yaml` next to the executable.
+
+## Future Improvements
+
+Possible enhancements include:
+- additional market data providers
+- richer portfolio analytics and reporting
+- transaction entry and editing in the UI
+- alerts and watchlist notifications
+- CSV/PDF export
+- deeper historical analysis and benchmarking
+
 
 ---
 
-**Version**: 0.1.0  
-**Last Updated**: 2026-08-25
+Version: 0.1.0
