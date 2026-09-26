@@ -7,7 +7,7 @@
 #include <QFont>
 #include <QPalette>
 
-MainWindow::MainWindow(const AppConfig& cfg, QWidget* parent) : QMainWindow(parent), cfg_(cfg), db_(cfg.database) {
+MainWindow::MainWindow(const AppConfig& cfg, QWidget* parent) : QMainWindow(parent), cfg_(cfg), db_(cfg.database), mockWorker_(nullptr), realWorker_(nullptr) {
     setWindowTitle("Financial Portfolio Dashboard");
     model_ = new PortfolioModel(this);
     table_ = new QTableView();
@@ -24,7 +24,6 @@ MainWindow::MainWindow(const AppConfig& cfg, QWidget* parent) : QMainWindow(pare
     // Summary panel
     auto* summaryGroup = new QGroupBox("Portfolio Summary");
     auto* summaryLayout = new QHBoxLayout();
-          QFont titleFont("Arial", 11, QFont::Bold);
           QFont valueFont("Arial", 12);
           totalValueLabel_ = new QLabel("Total Value: $0.00");
           totalValueLabel_->setFont(valueFont);
@@ -37,7 +36,6 @@ MainWindow::MainWindow(const AppConfig& cfg, QWidget* parent) : QMainWindow(pare
           summaryLayout->addWidget(totalPnLLabel_);
           summaryGroup->setLayout(summaryLayout);
 
-    // Right side: chart + ticker input
     auto* rightLayout = new QVBoxLayout();
           rightLayout->addWidget(new QLabel("Price Chart"));
           rightLayout->addWidget(tickerInput_);
@@ -56,17 +54,39 @@ MainWindow::MainWindow(const AppConfig& cfg, QWidget* parent) : QMainWindow(pare
           central->setLayout(mainLayout);
           setCentralWidget(central);
 
-    //Market data worker
-    worker_ = new MarketDataWorker(db_, cfg.watchlist, cfg.market_data.poll_interval_seconds, this);
-    connect(worker_, &MarketDataWorker::newPricesAvailable, this, &MainWindow::refreshPortfolio);
-    worker_->start();
+    // Choose worker based on config
+    if (cfg.market_data.provider == "alphavantage") {
+        realWorker_ = new RealMarketDataWorker(
+            db_,
+            cfg.watchlist,
+            cfg.market_data.alphavantage,
+            cfg.market_data.poll_interval_seconds,
+            this
+        );
+        connect(realWorker_, &RealMarketDataWorker::newPricesAvailable, this, &MainWindow::refreshPortfolio);
+        realWorker_->start();
+    } else {
+        // Fallback to mock
+        mockWorker_ = new MarketDataWorker(
+            db_,
+            cfg.watchlist,
+            cfg.market_data.poll_interval_seconds,
+            this
+        );
+        connect(mockWorker_, &MarketDataWorker::newPricesAvailable, this, &MainWindow::refreshPortfolio);
+        mockWorker_->start();
+    }
+
     refreshPortfolio();
 }
 
 MainWindow::~MainWindow() {
-    if (worker_) {
-        worker_->stop();
-        worker_->wait();
+    if (mockWorker_) {
+        mockWorker_->stop();
+        mockWorker_->wait();
+    }
+    if (realWorker_) {
+        realWorker_->stop();
     }
 }
 
