@@ -2,8 +2,10 @@
 
 #include "DbConnection.h"
 #include "MarketDataWorker.h"
+#include "RealMarketDataWorker.h"
 #include "PortfolioModel.h"
 #include "ChartWidget.h"
+#include "Config.h"
 #include <QMainWindow>
 #include <QTableView>
 #include <QLineEdit>
@@ -22,7 +24,8 @@ private slots:
 private:
     AppConfig cfg_;
     DbConnection db_;
-    MarketDataWorker* worker_;
+    MarketDataWorker* mockWorker_;
+    RealMarketDataWorker* realWorker_;
     PortfolioModel* model_;
     QTableView* table_;
     ChartWidget* chart_;
